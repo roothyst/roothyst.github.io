@@ -7,7 +7,7 @@
   <br>
 
   <samp>
-    Creating efficient systems and clean code.<br>
+    Creating efficient systems and clean code. (not at all :p)<br>
     Focusing on high-performance applications and backend logic.<br>
     Based in St. Petersburg.
   </samp>
