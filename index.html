@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RootHyst | Loading...</title>
+    <link rel="icon" type="image/png" href="https://i.pinimg.com/1200x/e8/33/13/e8331374cfa301b3b9d62523faf0f071.jpg">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Montserrat:wght@500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
+
+        :root {
+            --accent: #d4c6a0;
+            --accent-glow: #f0e6c0;
+            --bg-dark: #0a0908;
+            --text-main: #f5f5f0;
+            --text-muted: rgba(212, 198, 160, 0.6);
+            --glass-bg: rgba(15, 14, 13, 0.8);
+            --glass-border: rgba(212, 198, 160, 0.15);
+            --row-bg: rgba(212, 198, 160, 0.05);
+            --card-radius: 24px;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Montserrat', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            padding: 20px;
+            position: relative;
+        }
+
+        canvas#particles {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+        }
+
+        .brand-logo {
+            position: absolute;
+            top: 30px; left: 40px;
+            font-weight: 900; font-size: 1.2rem;
+            color: var(--text-main); z-index: 100;
+            letter-spacing: 1px; text-transform: uppercase;
+            cursor: pointer;
+            text-shadow: 0 0 20px rgba(212, 198, 160, 0.4);
+            transition: 0.3s;
+        }
+        .brand-logo:hover { opacity: 0.8; text-shadow: 0 0 30px var(--accent); }
+        .brand-logo span { color: var(--accent); }
+
+        .music-control {
+            position: fixed;
+            bottom: 30px; right: 30px;
+            z-index: 100;
+            background: rgba(10, 9, 8, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 0;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center; justify-content: center;
+            width: 50px; height: 50px;
+            box-shadow: 0 0 15px rgba(212, 198, 160, 0.1);
+        }
+        .music-control:hover {
+            transform: scale(1.1);
+            background: var(--accent);
+            color: #0a0908;
+            box-shadow: 0 0 30px rgba(212, 198, 160, 0.5);
+        }
+        .music-playing { animation: pulse 3s infinite; }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(212, 198, 160, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(212, 198, 160, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(212, 198, 160, 0); }
+        }
+
+        .main-wrapper {
+            width: 100%; max-width: 480px;
+            display: flex; flex-direction: column; gap: 20px; 
+            z-index: 10; margin-top: 20px; 
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--card-radius);
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+            transition: 0.3s;
+        }
+
+        .header-card {
+            text-align: center; display: flex; flex-direction: column; align-items: center;
+            animation: slideInDown 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .avatar-container { position: relative; margin-bottom: 20px; }
+        
+        .avatar {
+            width: 130px; height: 130px;
+            border-radius: 50%; object-fit: cover;
+            border: 3px solid rgba(212, 198, 160, 0.1);
+            position: relative; z-index: 2;
+        }
+
+        .avatar-glow {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px; height: 150px;
+            border-radius: 50%;
+            border: 2px dashed var(--accent);
+            opacity: 0.4;
+            animation: spin 12s linear infinite;
+            z-index: 1;
+        }
+
+        h1 {
+            font-size: 2.2rem; font-weight: 800; color: var(--text-main); margin-bottom: 5px;
+            letter-spacing: -0.5px;
+        }
+
+        .micro-bio {
+            color: var(--accent);
+            font-size: 0.9rem; font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(212, 198, 160, 0.1);
+            padding: 6px 14px; border-radius: 12px;
+            border: 1px solid rgba(212, 198, 160, 0.1);
+        }
+
+        .details-card {
+            animation: slideInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.1s backwards;
+            padding: 25px;
+            display: flex; flex-direction: column; gap: 10px;
+        }
+
+        .info-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 18px; 
+            background: var(--row-bg);
+            border-radius: 14px;
+            border: 1px solid transparent;
+            transition: 0.3s;
+        }
+        
+        .info-row:hover {
+            background: rgba(212, 198, 160, 0.08);
+            border-color: rgba(212, 198, 160, 0.3);
+            transform: translateX(3px);
+        }
+
+        .label { color: var(--text-main); font-weight: 700; font-size: 0.9rem; }
+
+        .code-value {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
+            color: var(--text-muted); 
+            transition: 0.3s;
+        }
+        
+        .info-row:hover .code-value { color: var(--accent); }
+
+        .links { 
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; 
+            margin-top: 15px; 
+        }
+
+        .btn {
+            padding: 14px; border-radius: 14px;
+            background: linear-gradient(145deg, rgba(212, 198, 160, 0.1), rgba(212, 198, 160, 0.02));
+            color: var(--text-main); text-decoration: none; text-align: center;
+            font-weight: 700; font-size: 0.9rem;
+            border: 1px solid rgba(212, 198, 160, 0.15); 
+            transition: 0.3s;
+            position: relative; overflow: hidden;
+        }
+        
+        .btn::before {
+            content: ''; position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 198, 160, 0.3), transparent);
+            transform: translateX(-100%); transition: 0.6s;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 0 20px rgba(212, 198, 160, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .btn:hover::before { transform: translateX(100%); }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.2);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        @keyframes slideInDown { from { opacity: 0; transform: translateY(-40px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+
+        @media (max-width: 480px) {
+            .brand-logo { top: 20px; left: 20px; }
+            .main-wrapper { margin-top: 60px; width: 92%; }
+            .music-control { bottom: 20px; right: 20px; width: 45px; height: 45px; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="particles"></canvas>
+
+    <audio id="bg-music" loop>
+        <source src="https://www.dropbox.com/scl/fi/xj7ojhiv0yc4olbjf6seb/Griffith_s-Dream-2.mp3?rlkey=xoa0ml14ka94d862x56awxlct&st=64c8wxaj&dl=1" type="audio/mpeg">
+    </audio>
+
+    <div class="music-control" id="music-btn">
+        <svg id="icon-play" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+        <svg id="icon-pause" style="display:none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+    </div>
+
+    <div class="brand-logo">Root<span>Hyst</span></div>
+
+    <div class="main-wrapper">
+        <div class="glass-card header-card">
+            <div class="avatar-container">
+                <div class="avatar-glow"></div>
+                <img src="https://i.pinimg.com/1200x/e8/33/13/e8331374cfa301b3b9d62523faf0f071.jpg" alt="Avatar" class="avatar">
+            </div>
+            <h1>Hyst</h1>
+            <p class="micro-bio">&lt; Coder / Gamer &gt;</p>
+        </div>
+
+        <div class="glass-card details-card">
+            <div class="info-row">
+                <span class="label">Name</span>
+                <span class="code-value">roothyst</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Age</span>
+                <span class="code-value">???</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Birthday</span>
+                <span class="code-value">26 June</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Location</span>
+                <span class="code-value">St-Petersburg</span>
+            </div>
+            <div class="info-row">
+                <span class="label">Language</span>
+                <span class="code-value">Python, JS</span>
+            </div>
+
+            <div class="links">
+                <a href="https://t.me/roothyst" target="_blank" class="btn">Telegram</a>
+                <a href="https://fakecrime.bio/hy" target="_blank" class="btn">Fakecrime</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            © 2025 RootHyst System
+        </div>
+    </div>
+
+    <script>
+        const titles = ["RootHyst", "Hacked by Hyst", "System Failure", "RootedHyst", "Connect...", "Welcome"];
+        let titleIndex = 0;
+        function changeTitle() {
+            document.title = titles[titleIndex];
+            titleIndex = (titleIndex + 1) % titles.length;
+        }
+        setInterval(changeTitle, 1500);
+
+        const audio = document.getElementById('bg-music');
+        const musicBtn = document.getElementById('music-btn');
+        const iconPlay = document.getElementById('icon-play');
+        const iconPause = document.getElementById('icon-pause');
+        audio.volume = 0.4;
+
+        musicBtn.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play();
+                iconPlay.style.display = 'none';
+                iconPause.style.display = 'block';
+                musicBtn.classList.add('music-playing'); 
+            } else {
+                audio.pause();
+                iconPlay.style.display = 'block';
+                iconPause.style.display = 'none';
+                musicBtn.classList.remove('music-playing'); 
+            }
+        });
+
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let particles = [];
+        const particleCount = 100;
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5 - 0.2;
+                this.size = Math.random() * 2 + 0.5;
+                this.alpha = Math.random() * 0.5 + 0.1;
+                this.fade = Math.random() * 0.01 + 0.005;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha += this.fade;
+
+                if (this.alpha > 0.6 || this.alpha < 0.1) {
+                    this.fade = -this.fade;
+                }
+
+                if (this.y < 0 || this.x < 0 || this.x > width) {
+                    this.reset();
+                    this.y = height;
+                }
+            }
+
+            draw() {
+                ctx.fillStyle = `rgba(212, 198, 160, ${this.alpha})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        initParticles();
+        animate();
+    </script>
+</body>
+</html>
